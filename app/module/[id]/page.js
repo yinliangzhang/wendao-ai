@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { findModule } from "../../../data/modules";
+import { MODULES, findModule } from "../../../data/modules";
 
 function openingMessage(mod) {
   const first = mod.questions[0];
@@ -57,6 +57,8 @@ export default function ModulePage() {
   }, [messages, loading]);
 
   const userTurns = useMemo(() => messages.filter((m) => m.role === "user").length, [messages]);
+  const currentIndex = useMemo(() => MODULES.findIndex((item) => item.id === mod?.id), [mod?.id]);
+  const nextModule = currentIndex >= 0 ? MODULES[currentIndex + 1] : null;
 
   if (!mod) return <div className="empty-state"><h1>没有找到这个模块</h1><Link className="button button-primary" href="/hub">返回训练广场</Link></div>;
 
@@ -125,18 +127,30 @@ export default function ModulePage() {
         </div>
         <div className="chat-note">
           <span>已对话 {userTurns} 轮</span>
-          <p>军师会根据你的回答决定继续追问，还是自然推进；不用急着跑完路线图。</p>
+          <p>军师会根据你的回答自由追问。你觉得这一关聊够了，就可以直接进入下一关。</p>
         </div>
-        <div className="signal-guide">
-          <span className="guide-label">本关访谈方向</span>
-          {mod.questions.map((item, index) => (
-            <div key={item.id} className={`signal-step ${index === 0 ? "active" : ""}`}>
+        <div className="journey-nav">
+          <span className="guide-label">四关入口</span>
+          {MODULES.map((item, index) => (
+            <Link key={item.id} href={`/module/${item.id}`} className={`journey-link ${item.id === mod.id ? "active" : ""}`}>
               <i>{index + 1}</i>
-              <span>{item.prompt.split("：")[0]}</span>
-            </div>
+              <span>{item.title.replace(/^\d+ · /, "")}</span>
+              {item.id === mod.id && <b>当前</b>}
+            </Link>
           ))}
         </div>
-        <button className="reset-chat" type="button" onClick={resetChat}>重新开始这一关</button>
+        <div className="sidebar-actions">
+          {nextModule ? (
+            <Link className="button button-primary button-wide" href={`/module/${nextModule.id}`}>
+              <span>进入下一关</span><span>→</span>
+            </Link>
+          ) : (
+            <Link className="button button-primary button-wide" href="/hub">
+              <span>回到训练广场</span><span>→</span>
+            </Link>
+          )}
+          <button className="reset-chat" type="button" onClick={resetChat}>重新开始这一关</button>
+        </div>
       </aside>
 
       <main className="practice-main chat-main">
@@ -144,6 +158,7 @@ export default function ModulePage() {
           <div className="mobile-back"><Link href="/hub">← 广场</Link></div>
           <div className="autosave"><span className={saved ? "pulse" : ""}>✓</span>{saved ? "已保存" : "自动保存已开启"}</div>
           <div className="model-managed">AI 由后台配置</div>
+          {nextModule && <Link className="topbar-next" href={`/module/${nextModule.id}`}>下一关 →</Link>}
         </header>
 
         <div className="chat-content">
@@ -171,6 +186,16 @@ export default function ModulePage() {
             )}
             <div ref={bottomRef} />
           </div>
+
+          {nextModule && userTurns >= 3 && (
+            <div className="module-transition-card">
+              <div>
+                <span>本关可以先收束到这里</span>
+                <strong>准备进入「{nextModule.title.replace(/^\d+ · /, "")}」吗？</strong>
+              </div>
+              <Link className="button button-primary" href={`/module/${nextModule.id}`}>闯下一关 <span>→</span></Link>
+            </div>
+          )}
 
           <form className="chat-composer" onSubmit={sendMessage}>
             <textarea
