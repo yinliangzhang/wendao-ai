@@ -158,7 +158,6 @@ export default function ModulePage() {
           <div className="mobile-back"><Link href="/hub">← 广场</Link></div>
           <div className="autosave"><span className={saved ? "pulse" : ""}>✓</span>{saved ? "已保存" : "自动保存已开启"}</div>
           <div className="model-managed">AI 由后台配置</div>
-          {nextModule && <Link className="topbar-next" href={`/module/${nextModule.id}`}>下一关 →</Link>}
         </header>
 
         <div className="chat-content">
@@ -186,16 +185,6 @@ export default function ModulePage() {
             )}
             <div ref={bottomRef} />
           </div>
-
-          {nextModule && userTurns >= 3 && (
-            <div className="module-transition-card">
-              <div>
-                <span>本关可以先收束到这里</span>
-                <strong>准备进入「{nextModule.title.replace(/^\d+ · /, "")}」吗？</strong>
-              </div>
-              <Link className="button button-primary" href={`/module/${nextModule.id}`}>闯下一关 <span>→</span></Link>
-            </div>
-          )}
 
           <form className="chat-composer" onSubmit={sendMessage}>
             <textarea
