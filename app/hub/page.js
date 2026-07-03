@@ -52,8 +52,8 @@ export default function HubPage() {
         </div>
         <div className="side-user">
           <div className="avatar">D</div>
-          <div><strong>体验学员</strong><small>demo</small></div>
-          <Link href="/" aria-label="退出登录">↪</Link>
+          <div><strong>体验学员</strong><small>已登录</small></div>
+          <a href="/api/logout" aria-label="退出登录" title="退出登录">↪</a>
         </div>
       </aside>
 
