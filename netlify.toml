@@ -1,0 +1,6 @@
+[build]
+  command = "npm run build"
+
+# 让 netlify 正确运行 Next.js（含 API 路由 / 服务端函数）
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
