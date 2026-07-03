@@ -193,6 +193,8 @@ textarea { resize: vertical; min-height: 210px; padding: 15px; border-radius: 10
 .admin-card { margin-top: 20px; padding: 22px; background: white; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 12px 34px rgba(28,35,66,.045); }
 .admin-card h2 { margin: 0 0 6px; font-family: "Songti SC", "STSong", serif; font-size: 24px; }
 .admin-card > p { margin: 0 0 18px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+.admin-card-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+.admin-card-title-row p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
 .admin-grid { display: grid; gap: 12px; }
 .admin-config-row { display: grid; grid-template-columns: minmax(220px, 1fr) 160px 220px; gap: 12px; align-items: center; padding: 14px; background: #fafafa; border: 1px solid #eeeef2; border-radius: 13px; }
 .admin-config-row strong, .admin-config-row small { display: block; }
@@ -200,6 +202,17 @@ textarea { resize: vertical; min-height: 210px; padding: 15px; border-radius: 10
 .admin-config-row small { margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.5; }
 .admin-config-row select, .admin-config-row input { height: 40px; border-radius: 10px; font-size: 12px; }
 .admin-actions { display: flex; justify-content: flex-end; margin-top: 22px; }
+.admin-user-list { display: grid; gap: 12px; }
+.admin-user-row { display: grid; grid-template-columns: minmax(170px, .9fr) 120px minmax(280px, 1.4fr); gap: 14px; align-items: center; padding: 14px; background: #fafafa; border: 1px solid #eeeef2; border-radius: 13px; }
+.admin-user-main strong, .admin-user-main small { display: block; }
+.admin-user-main strong { font-size: 14px; letter-spacing: .02em; }
+.admin-user-main small { margin-top: 4px; color: var(--muted); font-size: 10px; line-height: 1.55; }
+.admin-user-row select { height: 38px; border-radius: 10px; font-size: 12px; }
+.module-permissions { display: flex; flex-wrap: wrap; gap: 8px; }
+.module-permissions label { display: inline-flex; align-items: center; gap: 6px; padding: 7px 9px; color: var(--muted); background: white; border: 1px solid var(--line); border-radius: 999px; font-size: 10px; cursor: pointer; }
+.module-permissions label.checked { color: var(--indigo); background: var(--indigo-soft); border-color: #d8dcff; }
+.module-permissions input { width: auto; height: auto; accent-color: var(--indigo); }
+.admin-empty { padding: 18px; color: var(--muted); background: #fafafa; border: 1px dashed #dedfe6; border-radius: 13px; font-size: 12px; }
 
 /* Chat practice */
 .chat-shell { background: #f6f6f3; }
@@ -256,7 +269,7 @@ textarea { resize: vertical; min-height: 210px; padding: 15px; border-radius: 10
   .login-shell { display: block; }.login-story { min-height: 440px; padding: 32px 28px; }.story-copy { margin: 80px 0 25px; }.story-copy h1 { font-size: 40px; }.insight-preview { display: none; }.login-panel { min-height: 620px; padding: 60px 28px; }
   .sidebar { display: none; }.dashboard { width: 100%; margin: 0; padding: 24px 20px; }.hero-orbit { opacity: .4; right: -80px; }.hero-content { max-width: 80%; }.stats-row { grid-template-columns: repeat(2,1fr); }.stats-row > div:nth-child(2)::after { display: none; }.section-heading { display: block; }.section-heading p { margin-top: 8px; text-align: left; }
   .practice-sidebar { display: none; }.practice-main { width: 100%; margin: 0; }.practice-topbar { padding: 0 20px; justify-content: space-between; }.mobile-back { display: block; font-size: 11px; }.practice-content { padding: 40px 20px 60px; }.chat-content { padding: 26px 20px 20px; }
-  .admin-shell { padding: 22px; }.admin-login { grid-template-columns: 1fr; }.admin-config-row { grid-template-columns: 1fr; }
+  .admin-shell { padding: 22px; }.admin-login { grid-template-columns: 1fr; }.admin-config-row, .admin-user-row { grid-template-columns: 1fr; }.admin-card-title-row { display: block; }.admin-card-title-row .button { margin-top: 12px; }
 }
 @media (max-width: 540px) {
   .login-story { min-height: 390px; }.story-copy h1 { font-size: 34px; }.story-copy p { font-size: 14px; }.story-footer { display: none; }

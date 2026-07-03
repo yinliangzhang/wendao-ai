@@ -1,5 +1,5 @@
 import { DEFAULT_MODEL, MODELS } from "../../../lib/config";
-import { getModelSelection } from "../../../lib/runtimeStore";
+import { getModelSelection, getUserAccess } from "../../../lib/runtimeStore";
 
 export const runtime = "nodejs";
 
@@ -129,6 +129,12 @@ export async function POST(req) {
   try {
     const { moduleId, featureId, moduleTitle, moduleIntro, systemPrompt, questions, messages } = await req.json();
     const cleanMessages = clipMessages(messages);
+    const authId = decodeURIComponent(req.cookies.get("wd_auth")?.value || "");
+
+    const access = await getUserAccess(authId, moduleId);
+    if (!access.ok) {
+      return Response.json({ error: access.error }, { status: 403 });
+    }
 
     if (!cleanMessages.some((m) => m.role === "user")) {
       return Response.json({ error: "请先输入你的回答" }, { status: 400 });
