@@ -11,9 +11,13 @@ const GROUPS = [
   { label: "看懂用户", range: [2, 4], accent: "cyan" },
 ];
 
-function readProgress() {
+function progressKey(userId) {
+  return userId ? `wendao-progress:${userId}` : "wendao-progress:anonymous";
+}
+
+function readUserProgress(userId) {
   if (typeof window === "undefined") return {};
-  try { return JSON.parse(localStorage.getItem("wendao-progress") || "{}"); }
+  try { return JSON.parse(localStorage.getItem(progressKey(userId)) || "{}"); }
   catch { return {}; }
 }
 
@@ -25,7 +29,24 @@ function completedCount(item) {
 
 export default function HubPage() {
   const [progress, setProgress] = useState({});
-  useEffect(() => setProgress(readProgress()), []);
+  const [viewer, setViewer] = useState(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/me")
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (!alive) return;
+        const user = data?.user || null;
+        setViewer(user);
+        setProgress(readUserProgress(user?.id));
+      })
+      .catch(() => {
+        if (!alive) return;
+        setProgress({});
+      });
+    return () => { alive = false; };
+  }, []);
 
   const totalTurns = useMemo(
     () => MODULES.reduce((sum, module) => sum + completedCount(progress[module.id]), 0),
@@ -51,8 +72,8 @@ export default function HubPage() {
           <p>什么是你做完之后，反而比开始前更有能量的事？</p>
         </div>
         <div className="side-user">
-          <div className="avatar">D</div>
-          <div><strong>体验学员</strong><small>已登录</small></div>
+          <div className="avatar">{viewer?.phone?.slice(-2) || "学"}</div>
+          <div><strong>体验学员</strong><small>{viewer?.phone || "已登录"}</small></div>
           <a href="/api/logout" aria-label="退出登录" title="退出登录">↪</a>
         </div>
       </aside>

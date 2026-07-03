@@ -16,10 +16,14 @@ function openingMessage(mod) {
   };
 }
 
-function getSaved(id) {
+function progressKey(userId) {
+  return userId ? `wendao-progress:${userId}` : "wendao-progress:anonymous";
+}
+
+function getSaved(id, userId) {
   if (typeof window === "undefined") return { messages: [] };
   try {
-    const data = JSON.parse(localStorage.getItem("wendao-progress") || "{}")[id] || {};
+    const data = JSON.parse(localStorage.getItem(progressKey(userId)) || "{}")[id] || {};
     return { messages: Array.isArray(data.messages) ? data.messages : [] };
   } catch {
     return { messages: [] };
@@ -33,24 +37,40 @@ export default function ModulePage() {
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [viewer, setViewer] = useState(null);
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    if (!mod) return;
-    const data = getSaved(mod.id);
-    setMessages(data.messages?.length ? data.messages : [openingMessage(mod)]);
-    setDraft("");
-  }, [mod?.id]);
+    let alive = true;
+    fetch("/api/me")
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => {
+        if (!alive) return;
+        setViewer(data?.user || null);
+      })
+      .catch(() => {
+        if (!alive) return;
+        setViewer(null);
+      });
+    return () => { alive = false; };
+  }, []);
 
   useEffect(() => {
-    if (!mod || typeof window === "undefined" || !messages.length) return;
-    const all = JSON.parse(localStorage.getItem("wendao-progress") || "{}");
+    if (!mod || !viewer?.id) return;
+    const data = getSaved(mod.id, viewer.id);
+    setMessages(data.messages?.length ? data.messages : [openingMessage(mod)]);
+    setDraft("");
+  }, [mod?.id, viewer?.id]);
+
+  useEffect(() => {
+    if (!mod || !viewer?.id || typeof window === "undefined" || !messages.length) return;
+    const all = JSON.parse(localStorage.getItem(progressKey(viewer.id)) || "{}");
     all[mod.id] = { ...(all[mod.id] || {}), messages, updatedAt: Date.now() };
-    localStorage.setItem("wendao-progress", JSON.stringify(all));
+    localStorage.setItem(progressKey(viewer.id), JSON.stringify(all));
     setSaved(true);
     const timer = setTimeout(() => setSaved(false), 1200);
     return () => clearTimeout(timer);
-  }, [messages, mod?.id]);
+  }, [messages, mod?.id, viewer?.id]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
